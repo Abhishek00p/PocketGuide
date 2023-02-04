@@ -11,3 +11,6 @@ HomePage
 
 Scan to search about places
 ![scanner](scanner.png) 
+
+BookMark your Location
+![BookMarks](bookmark.png)
