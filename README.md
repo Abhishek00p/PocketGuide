@@ -12,5 +12,5 @@ HomePage
 Scan to search about places
 ![scanner](scanner.png) 
 
-BookMark your Location
+BookMark your Location \n
 ![BookMarks](bookmark.png)
