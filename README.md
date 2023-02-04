@@ -23,4 +23,4 @@ BookMark your Location
 
 
 
-![information Page](https://github.com/Abhishek00p/PocketGuide/blob/master/samples/mathran.png?raw=true)
+![information Page](https://github.com/Abhishek00p/PocketGuide/blob/master/samples/matheran.png?raw=true)
