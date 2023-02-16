@@ -42,10 +42,12 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   http: ^0.13.5
   get: ^4.6.5
-  uri_to_file: ^0.2.0
   toast: ^0.3.0
   fluttertoast: ^8.1.2
   flutter_launcher_icons: ^0.11.0
+  firebase_storage: ^11.0.10
+  firebase_core: ^2.4.1
+  okhttp: ^0.0.1
 
 dev_dependencies:
   flutter_test:

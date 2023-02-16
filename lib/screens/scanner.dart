@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pocketguide/api/Ai.dart';
 import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/screens/final.dart';
 
@@ -146,8 +147,9 @@ class _ScannerState extends State<Scanner> {
                           ),
                         ),
                         IconButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (imgFile != null) {
+                                await AIScanner().uploadFile(imgFile);
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(

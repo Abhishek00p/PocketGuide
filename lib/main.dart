@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/api/model.dart';
@@ -7,8 +8,9 @@ import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/helper/helper.dart';
 import 'package:pocketguide/tabs/home.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -48,7 +50,29 @@ class _WelcomePageState extends State<WelcomePage> {
                 builder: (context) => isReady
                     ? HomePage(data: data)
                     : Container(
-                        child: Center(child: CircularProgressIndicator()),
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    ready();
+                                  });
+                                },
+                                child: Container(
+                                  height: 50,
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                  ),
+                                  child: Center(
+                                    child: Text("Refresh"),
+                                  ),
+                                )),
+                            Center(child: CircularProgressIndicator()),
+                          ],
+                        ),
                       ))));
   }
 
