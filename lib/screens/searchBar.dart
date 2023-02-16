@@ -8,7 +8,6 @@ import 'package:pocketguide/helper/helper.dart';
 import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/screens/final.dart';
 
-//5ae2e3f221c38a28845f05b62310c9dde5040fbddadf0ad4bd35a14f  https://opentripmap.io/docs
 class SearchMe extends StatefulWidget {
   var dataList;
   final data;
