@@ -46,8 +46,19 @@ dependencies:
   fluttertoast: ^8.1.2
   flutter_launcher_icons: ^0.11.0
   firebase_storage: ^11.0.10
-  firebase_core: ^2.4.1
+  firebase_core: ^2.9.0
   okhttp: ^0.0.1
+  cloud_firestore: ^4.5.0
+  firebase_auth: ^4.4.0
+  
+  translator: ^0.1.7
+  google_mlkit_text_recognition: ^0.5.0
+  flutter_tts: ^3.6.3
+  flutter_dotenv: ^5.0.2
+  firebase_messaging: ^14.4.0
+  flutter_local_notifications: ^13.0.0
+  url_launcher: ^6.1.10
+  onesignal_flutter: ^3.5.1
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +88,8 @@ flutter:
   assets:
 
     - assets/image/
+    - assets/
+    - .env
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

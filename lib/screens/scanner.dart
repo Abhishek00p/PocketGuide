@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -6,6 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pocketguide/api/Ai.dart';
 import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/screens/final.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:translator/translator.dart';
+import 'result.dart';
 
 class Scanner extends StatefulWidget {
   final List<CameraDescription>? cameras;
@@ -19,6 +24,10 @@ class _ScannerState extends State<Scanner> {
   late CameraController controller;
   final _pick = ImagePicker();
   XFile? imgFile;
+  bool imgCaptured = false;
+
+  final textrec = TextRecognizer();
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +44,21 @@ class _ScannerState extends State<Scanner> {
   void dispose() {
     super.dispose();
     controller.dispose();
+    textrec.close();
+  }
+
+  getText() async {
+    final inputimage = InputImage.fromFilePath(imgFile!.path);
+    RecognizedText recognizedText = await textrec.processImage(inputimage);
+    final lang = recognizedText.blocks.first.recognizedLanguages;
+    var scannedtext = recognizedText.text;
+    GoogleTranslator _googletrans = GoogleTranslator();
+    final res = await _googletrans.translate(scannedtext);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ResultScreen(
+                text: scannedtext, language: res.sourceLanguage.code)));
   }
 
   @override
@@ -100,7 +124,9 @@ class _ScannerState extends State<Scanner> {
                       child: Container(
                         height: h * 0.6,
                         width: w * 0.8,
-                        child: CameraPreview(controller),
+                        child: !imgCaptured
+                            ? CameraPreview(controller)
+                            : Image.file(File(imgFile!.path)),
                       ),
                     ),
                     SizedBox(
@@ -132,6 +158,11 @@ class _ScannerState extends State<Scanner> {
                           onTap: () async {
                             imgFile = await _pick.pickImage(
                                 source: ImageSource.camera);
+                            if (imgFile != null) {
+                              setState(() {
+                                imgCaptured = true;
+                              });
+                            }
                           },
                           child: CircleAvatar(
                             radius: 25,
@@ -148,19 +179,7 @@ class _ScannerState extends State<Scanner> {
                         ),
                         IconButton(
                             onPressed: () async {
-                              if (imgFile != null) {
-                                await AIScanner().uploadFile(imgFile);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => FinalPage(
-                                            image: imgFile,
-                                            isCameraImage: true,
-                                            description: "as",
-                                            location: "Mumbai",
-                                            rating: "rating",
-                                            title: "title")));
-                              }
+                              getText();
                             },
                             icon: Icon(
                               Icons.arrow_forward,

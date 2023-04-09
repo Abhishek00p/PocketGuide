@@ -3,6 +3,7 @@ import 'package:pocketguide/helper/finalcard.dart';
 
 import '../api/myfile.dart';
 import '../helper/colors.dart';
+import '../screens/final.dart';
 
 class Explore extends StatefulWidget {
   final data;
@@ -75,13 +76,28 @@ class _ExploreState extends State<Explore> {
                             widget.data["res"][usableData[index]]);
 
                         // print("--------${modelData.image}");
-                        return FinalCustomCard(
-                            description: modelData.description,
-                            image: modelData.image,
-                            isCameraImage: false,
-                            location: modelData.city,
-                            rating: "2.5",
-                            title: modelData.title);
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => FinalPage(
+                                          isCameraImage: false,
+                                          image: modelData.image,
+                                          location: modelData.city,
+                                          description: modelData.description,
+                                          rating: "3.5",
+                                          title: modelData.title,
+                                        )));
+                          },
+                          child: FinalCustomCard(
+                              description: modelData.description,
+                              image: modelData.image,
+                              isCameraImage: false,
+                              location: modelData.city,
+                              rating: "2.5",
+                              title: modelData.title),
+                        );
                       },
                     )),
                   ],

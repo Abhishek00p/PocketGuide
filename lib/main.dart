@@ -1,17 +1,48 @@
 import 'dart:async';
-
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/api/model.dart';
 import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/helper/helper.dart';
+import 'package:pocketguide/helper/login.dart';
 import 'package:pocketguide/tabs/home.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'news.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await dotenv.load();
+
   runApp(MyApp());
+  OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+
+  OneSignal.shared.setAppId("02c24a59-5ecc-41b1-8b54-63431adc90e7");
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
+    print("Accepted permission: $accepted");
+  });
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print(" notifi from BG ${message.data}");
+  print(" notifi from BG ${message.notification!.title}");
+}
+
+Future<void> _firebaseMessagingOnMessage(RemoteMessage message) async {
+  // Handle foreground message
+  print(" notifi from onmesg $message");
+}
+
+Future<void> _firebaseMessagingOnMessageOpenedApp(RemoteMessage message) async {
+  // Handle notification tapped event
+  print(" notifi from onpenmesg $message");
 }
 
 class MyApp extends StatelessWidget {
@@ -30,50 +61,13 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  final _controll = Get.put(GetXControllers());
-  bool isReady = false;
-  var data;
-  ready() async {
-    data = await Database().loadData();
-    isReady = true;
-  }
-
   @override
   void initState() {
     super.initState();
-    ready();
     Timer(
         Duration(seconds: 3),
-        () => Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => isReady
-                    ? HomePage(data: data)
-                    : Container(
-                        color: Colors.white,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    ready();
-                                  });
-                                },
-                                child: Container(
-                                  height: 50,
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(),
-                                  ),
-                                  child: Center(
-                                    child: Text("Refresh"),
-                                  ),
-                                )),
-                            Center(child: CircularProgressIndicator()),
-                          ],
-                        ),
-                      ))));
+        () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginPage())));
   }
 
   @override
@@ -91,13 +85,8 @@ class _WelcomePageState extends State<WelcomePage> {
                 height: h / 2.5,
               ),
               Align(
-                alignment: Alignment.center,
-                child: Image.asset(
-                  "assets/image/logo.png",
-                  height: 100,
-                  width: 100,
-                ),
-              ),
+                  alignment: Alignment.center,
+                  child: Image.asset("assets/image/logo.png")),
               SizedBox(
                 height: h / 3,
               ),

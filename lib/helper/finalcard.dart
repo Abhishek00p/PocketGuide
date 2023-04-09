@@ -101,6 +101,27 @@ class _FinalCustomCardState extends State<FinalCustomCard> {
             ),
           ),
           Positioned(
+              top: 15,
+              left: 20,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  height: 40,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white.withAlpha(20)),
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )),
+          Positioned(
               bottom: 170,
               left: 20,
               child: Container(

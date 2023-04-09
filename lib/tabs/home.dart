@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pocketguide/helper/login.dart';
+import 'package:pocketguide/news.dart';
 import 'package:pocketguide/tabs/explore.dart';
 import 'package:pocketguide/helper/helper.dart';
 import 'package:pocketguide/api/myfile.dart';
@@ -10,6 +12,7 @@ import 'package:pocketguide/screens/scanner.dart';
 import 'package:pocketguide/screens/searchBar.dart';
 import 'package:pocketguide/tabs/bookmark.dart';
 import 'package:toast/toast.dart';
+import 'package:pocketguide/screens/databse.dart';
 
 class HomePage extends StatefulWidget {
   late final data;
@@ -36,7 +39,16 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             SizedBox(
-              width: 8,
+              child: IconButton(
+                  onPressed: () {
+                    AuthService().signOut();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  icon: Icon(
+                    Icons.logout,
+                    color: myyellow,
+                  )),
             ),
           ],
         ),
@@ -85,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {},
                 child: Container(
                   height: 75,
-                  width: w / 3.1,
+                  width: w / 4.1,
                   child: Center(
                     child: Icon(
                       Icons.home,
@@ -103,9 +115,25 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: Container(
                     height: 75,
-                    width: w / 3.1,
+                    width: w / 4.1,
                     child:
                         Center(child: Image.asset("assets/image/Compass.png"))),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => NewsPage()));
+                },
+                child: Container(
+                  height: 75,
+                  width: w / 4.1,
+                  child: Center(
+                    child: Icon(
+                      Icons.newspaper,
+                      color: myyellow,
+                    ),
+                  ),
+                ),
               ),
               InkWell(
                 onTap: () {
@@ -114,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: Container(
                     height: 75,
-                    width: w / 3.1,
+                    width: w / 4.1,
                     child: Center(
                         child: Image.asset("assets/image/Bookmark.png"))),
               )

@@ -125,7 +125,7 @@ class _SearchMeState extends State<SearchMe> {
                             padding: const EdgeInsets.only(bottom: 8),
                             child: InkWell(
                               onTap: () async {
-                                print(widget.data["res"]);
+                                // print(widget.data["res"]);
                                 // String placeTitle =
                                 //     widget.data["res"].keys.toList()[index];
                                 var myplace =
@@ -183,7 +183,7 @@ matchString(String s, data) async {
     // print(myplace);
     if (myplace["Title"].toLowerCase().contains(s.toLowerCase())) {
       list.add(myplace["Title"]);
-      print(myplace["Title"]);
+      // print(myplace["Title"]);
     }
   }
   return {"list": list, "ind": i};

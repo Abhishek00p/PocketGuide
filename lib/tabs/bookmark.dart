@@ -121,14 +121,14 @@ class _BookMarkState extends State<BookMark> {
                                         _controll.BookMarkList[index]["title"]),
                                     Text(_controll.BookMarkList[index]
                                         ["location"]),
-                                    Text("ff"),
+                                    Text("10:00 - 17:00"),
                                   ],
                                 ),
                               ),
                             ),
                             Positioned(
                                 right: 15,
-                                top: 25,
+                                top: 30,
                                 child: IconButton(
                                     onPressed: () async {
                                       await BookMarkFunctions()

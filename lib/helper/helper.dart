@@ -21,26 +21,6 @@ class Helper {
 }
 
 class GetXControllers extends GetxController {
-  var mylist = [
-    {
-      "name": "Name",
-      "star": 3,
-      "feedback":
-          "aaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabc"
-    },
-    {
-      "name": "Name",
-      "star": 3,
-      "feedback":
-          "aaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabc"
-    },
-    {
-      "name": "Name",
-      "star": 3,
-      "feedback":
-          "aaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabcaaaaabcaaaaaaaaabc"
-    }
-  ].obs;
   var BookMarkList = [].obs;
 }
 
@@ -69,10 +49,4 @@ class BookMarkFunctions {
       }
     });
   }
-}
-
-AddReview(name, star, content) async {
-  final _control = Get.put(GetXControllers());
-  _control.mylist
-      .add({"name": name, "star": star.toInt(), "feedback": content});
 }

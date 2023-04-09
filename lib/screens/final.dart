@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/helper/colors.dart';
 import 'package:pocketguide/helper/finalcard.dart';
 import 'package:pocketguide/helper/helper.dart';
+import 'package:pocketguide/screens/databse.dart';
 
 class FinalPage extends StatefulWidget {
   final image;
@@ -35,10 +37,25 @@ class _FinalPageState extends State<FinalPage> {
     textController.dispose();
   }
 
+  getREviews() async {
+    final placeDAta = await FirebaseFirestore.instance
+        .collection("reviews")
+        .doc(widget.title.toString().toLowerCase())
+        .get();
+    // print(placeDAta.data());
+  }
+
+  @override
+  void initState() {
+    // getREviews();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: mybackground,
@@ -59,76 +76,96 @@ class _FinalPageState extends State<FinalPage> {
                 SizedBox(
                   height: 15,
                 ),
-                Container(
-                  height: 400,
-                  // color: Colors.red,
-                  padding: EdgeInsets.all(8),
-                  child: GridView.builder(
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 180,
-                          childAspectRatio: 2 / 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10),
-                      itemCount: _control.mylist.length,
-                      itemBuilder: (context, index) => Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            elevation: 2,
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Color.fromRGBO(214, 162, 102, 1),
-                              ),
-                              height: 85,
-                              width: 150,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(
-                                    _control.mylist[index]["name"].toString(),
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: "Poppins",
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 120,
-                                        height: 20,
-                                        child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            return Icon(
-                                              Icons.star,
-                                              color: Colors.white,
-                                              size: 20,
-                                            );
-                                          },
-                                          itemCount: int.parse(_control
-                                              .mylist[index]["star"]
-                                              .toString()),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Text(
-                                    _control.mylist[index]["feedback"]
-                                        .toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w300,
-                                        color: Colors.white,
-                                        fontFamily: "Poppins"),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )),
-                ),
+                // Container(
+                //   height: 400,
+                //   // color: Colors.red,
+                //   padding: EdgeInsets.all(8),
+                //   child: FutureBuilder(
+                //     future: getREviews(),
+                //     builder: (context, AsyncSnapshot snapshot) {
+                //       if (snapshot.hasData &&
+                //           snapshot.connectionState == ConnectionState.done) {
+                //         return GridView.builder(
+                //             shrinkWrap: true,
+                //             gridDelegate:
+                //                 SliverGridDelegateWithMaxCrossAxisExtent(
+                //                     maxCrossAxisExtent: 180,
+                //                     childAspectRatio: 2 / 2,
+                //                     crossAxisSpacing: 10,
+                //                     mainAxisSpacing: 10),
+                //             itemCount: snapshot.data.length,
+                //             itemBuilder: (context, index) => Card(
+                //                   shape: RoundedRectangleBorder(
+                //                       borderRadius: BorderRadius.circular(20)),
+                //                   elevation: 2,
+                //                   child: Container(
+                //                     padding: EdgeInsets.all(8),
+                //                     decoration: BoxDecoration(
+                //                       borderRadius: BorderRadius.circular(20),
+                //                       color: Color.fromRGBO(214, 162, 102, 1),
+                //                     ),
+                //                     height: 85,
+                //                     width: 150,
+                //                     child: Column(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.spaceEvenly,
+                //                       children: [
+                //                         Text(
+                //                           snapshot.data[index]["name"]
+                //                               .toString(),
+                //                           style: TextStyle(
+                //                               fontSize: 20,
+                //                               fontFamily: "Poppins",
+                //                               color: Colors.white,
+                //                               fontWeight: FontWeight.w400),
+                //                         ),
+                //                         Row(
+                //                           children: [
+                //                             Container(
+                //                               width: 120,
+                //                               height: 20,
+                //                               child: ListView.builder(
+                //                                 scrollDirection:
+                //                                     Axis.horizontal,
+                //                                 itemBuilder: (context, index) {
+                //                                   return Icon(
+                //                                     Icons.star,
+                //                                     color: Colors.white,
+                //                                     size: 20,
+                //                                   );
+                //                                 },
+                //                                 itemCount: int.parse(snapshot
+                //                                     .data[index]["star"]
+                //                                     .toString()),
+                //                               ),
+                //                             )
+                //                           ],
+                //                         ),
+                //                         Text(
+                //                           snapshot.data[index]["feedback"]
+                //                               .toString(),
+                //                           style: TextStyle(
+                //                               fontWeight: FontWeight.w300,
+                //                               color: Colors.white,
+                //                               fontFamily: "Poppins"),
+                //                         )
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ));
+                //       } else if (snapshot.connectionState ==
+                //           ConnectionState.waiting) {
+                //         return CircularProgressIndicator();
+                //       } else {
+                //         return Container(
+                //           child: Center(
+                //             child: Text("No reviews yet !! "),
+                //           ),
+                //         );
+                //       }
+                //     },
+                //   ),
+                // ),
                 SizedBox(
                   height: 20,
                 ),
@@ -197,13 +234,15 @@ class _FinalPageState extends State<FinalPage> {
                                   ),
                                   InkWell(
                                       onTap: () async {
-                                        await AddReview("user", _ratingValue,
-                                            textController.text);
-
+                                        await addReview(
+                                            textController.text,
+                                            _ratingValue,
+                                            widget.title
+                                                .toString()
+                                                .toLowerCase());
                                         setState(() {});
 
                                         textController.clear();
-                                        Navigator.pop(context, _control.mylist);
                                       },
                                       child: Container(
                                         height: 30,
