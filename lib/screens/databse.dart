@@ -4,19 +4,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
-final store_ints = FirebaseFirestore.instance.collection("reviews");
+final reviews_instance =
+    FirebaseFirestore.instance.collection("users").doc("reviews");
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 addReview(String content, double star, String placeName) async {
   try {
-    await store_ints
-        .doc(placeName)
-        .collection(_auth.currentUser!.uid)
-        .doc(_auth.currentUser!.displayName)
+    await reviews_instance
+        .collection(placeName.toLowerCase().trim())
+        .doc(_auth.currentUser!.uid)
         .set({
       "name": _auth.currentUser!.displayName,
       "content": content,
-      "stars": star
+      "stars": star.toString()
     });
     Toast.show("Added review");
   } catch (e) {

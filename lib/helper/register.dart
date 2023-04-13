@@ -39,7 +39,7 @@ class _SignupPageState extends State<SignupPage> {
             isLoading = false;
           });
 
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => LoginPage()));
         } else {
           emptyallField();

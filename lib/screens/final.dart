@@ -30,25 +30,27 @@ class _FinalPageState extends State<FinalPage> {
   var _ratingValue = 0.0;
   final _control = Get.put(GetXControllers());
   TextEditingController textController = TextEditingController();
-
   @override
   void dispose() {
     super.dispose();
     textController.dispose();
   }
 
-  getREviews() async {
-    final placeDAta = await FirebaseFirestore.instance
-        .collection("reviews")
-        .doc(widget.title.toString().toLowerCase())
-        .get();
-    // print(placeDAta.data());
-  }
-
   @override
   void initState() {
-    // getREviews();
+    getReviews();
     super.initState();
+  }
+
+  getReviews() async {
+    var data;
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc("reviews")
+        .collection(widget.title.toLowerCase().trim())
+        .get()
+        .then((value) => data = value);
+    return data.docs;
   }
 
   @override
@@ -76,96 +78,113 @@ class _FinalPageState extends State<FinalPage> {
                 SizedBox(
                   height: 15,
                 ),
-                // Container(
-                //   height: 400,
-                //   // color: Colors.red,
-                //   padding: EdgeInsets.all(8),
-                //   child: FutureBuilder(
-                //     future: getREviews(),
-                //     builder: (context, AsyncSnapshot snapshot) {
-                //       if (snapshot.hasData &&
-                //           snapshot.connectionState == ConnectionState.done) {
-                //         return GridView.builder(
-                //             shrinkWrap: true,
-                //             gridDelegate:
-                //                 SliverGridDelegateWithMaxCrossAxisExtent(
-                //                     maxCrossAxisExtent: 180,
-                //                     childAspectRatio: 2 / 2,
-                //                     crossAxisSpacing: 10,
-                //                     mainAxisSpacing: 10),
-                //             itemCount: snapshot.data.length,
-                //             itemBuilder: (context, index) => Card(
-                //                   shape: RoundedRectangleBorder(
-                //                       borderRadius: BorderRadius.circular(20)),
-                //                   elevation: 2,
-                //                   child: Container(
-                //                     padding: EdgeInsets.all(8),
-                //                     decoration: BoxDecoration(
-                //                       borderRadius: BorderRadius.circular(20),
-                //                       color: Color.fromRGBO(214, 162, 102, 1),
-                //                     ),
-                //                     height: 85,
-                //                     width: 150,
-                //                     child: Column(
-                //                       mainAxisAlignment:
-                //                           MainAxisAlignment.spaceEvenly,
-                //                       children: [
-                //                         Text(
-                //                           snapshot.data[index]["name"]
-                //                               .toString(),
-                //                           style: TextStyle(
-                //                               fontSize: 20,
-                //                               fontFamily: "Poppins",
-                //                               color: Colors.white,
-                //                               fontWeight: FontWeight.w400),
-                //                         ),
-                //                         Row(
-                //                           children: [
-                //                             Container(
-                //                               width: 120,
-                //                               height: 20,
-                //                               child: ListView.builder(
-                //                                 scrollDirection:
-                //                                     Axis.horizontal,
-                //                                 itemBuilder: (context, index) {
-                //                                   return Icon(
-                //                                     Icons.star,
-                //                                     color: Colors.white,
-                //                                     size: 20,
-                //                                   );
-                //                                 },
-                //                                 itemCount: int.parse(snapshot
-                //                                     .data[index]["star"]
-                //                                     .toString()),
-                //                               ),
-                //                             )
-                //                           ],
-                //                         ),
-                //                         Text(
-                //                           snapshot.data[index]["feedback"]
-                //                               .toString(),
-                //                           style: TextStyle(
-                //                               fontWeight: FontWeight.w300,
-                //                               color: Colors.white,
-                //                               fontFamily: "Poppins"),
-                //                         )
-                //                       ],
-                //                     ),
-                //                   ),
-                //                 ));
-                //       } else if (snapshot.connectionState ==
-                //           ConnectionState.waiting) {
-                //         return CircularProgressIndicator();
-                //       } else {
-                //         return Container(
-                //           child: Center(
-                //             child: Text("No reviews yet !! "),
-                //           ),
-                //         );
-                //       }
-                //     },
-                //   ),
-                // ),
+                Container(
+                  height: h * 0.3,
+                  padding: EdgeInsets.all(8),
+                  child: FutureBuilder(
+                    future: getReviews(),
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                            child: Text("Something is not Good here"));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.data.isEmpty || !snapshot.hasData) {
+                        print(snapshot.data!);
+                        return Container(
+                          child: Center(
+                            child: Text(
+                              "No reviews yet !! ",
+                              style: TextStyle(color: myyellow),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasData &&
+                          snapshot.connectionState == ConnectionState.done) {
+                        print("Reviews are  : ${snapshot.data!}");
+                        return GridView.builder(
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 180,
+                                    childAspectRatio: 2 / 2,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10),
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) => Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  elevation: 2,
+                                  child: Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Color.fromRGBO(214, 162, 102, 1),
+                                    ),
+                                    height: 85,
+                                    width: 150,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          snapshot.data[index]["name"]
+                                              .toString(),
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontFamily: "Poppins",
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 120,
+                                              height: 20,
+                                              child: ListView.builder(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemBuilder: (context, index) {
+                                                  return Icon(
+                                                    Icons.star,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  );
+                                                },
+                                                itemCount: double.tryParse(
+                                                        snapshot.data[index]
+                                                            ["stars"])!
+                                                    .round(),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Text(
+                                          snapshot.data[index]["content"]
+                                              .toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.white,
+                                              fontFamily: "Poppins"),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ));
+                      } else {
+                        print(
+                            "Connectionstate : ${snapshot.connectionState}  and datahas: ${snapshot.hasData}");
+                        return Center(child: Text("Something went wrong"));
+                      }
+                    },
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -224,6 +243,7 @@ class _FinalPageState extends State<FinalPage> {
                                             Icons.star_outline,
                                             color: Colors.black,
                                           )),
+                                      updateOnDrag: true,
                                       onRatingUpdate: (value) {
                                         setState(() {
                                           _ratingValue = value;

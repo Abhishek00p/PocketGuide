@@ -29,6 +29,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
@@ -42,9 +52,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             SizedBox(
               child: IconButton(
-                  onPressed: () {
-                    AuthService().signOut();
-                    Navigator.pushReplacement(context,
+                  onPressed: () async {
+                    await AuthService().signOut();
+                    await Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   icon: Icon(

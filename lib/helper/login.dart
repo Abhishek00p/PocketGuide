@@ -53,6 +53,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  bool hide = false;
+
+  hidePass() async {
+    setState(() {
+      hide = !hide;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -104,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                               width: w - 40,
                               child: TextFormField(
                                 enabled: true,
+                                keyboardType: TextInputType.emailAddress,
                                 controller: _emailController,
                                 style: TextStyle(
                                     fontSize: 18, color: Colors.white),
@@ -139,10 +148,24 @@ class _LoginPageState extends State<LoginPage> {
                               width: w - 40,
                               child: TextFormField(
                                 controller: _passwordController,
-                                obscureText: true,
+                                obscureText: hide ? true : false,
                                 style: TextStyle(
                                     fontSize: 18, color: Colors.white),
                                 decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(
+                                    onTap: () async {
+                                      await hidePass();
+                                    },
+                                    child: !hide
+                                        ? Icon(
+                                            Icons.remove_red_eye,
+                                            color: Colors.white,
+                                          )
+                                        : Icon(
+                                            Icons.lock,
+                                            color: Colors.white,
+                                          ),
+                                  ),
                                   focusedBorder: OutlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.white)),
