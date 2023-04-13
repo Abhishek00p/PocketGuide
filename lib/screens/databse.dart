@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 final store_ints = FirebaseFirestore.instance.collection("reviews");
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -17,9 +18,9 @@ addReview(String content, double star, String placeName) async {
       "content": content,
       "stars": star
     });
-    Fluttertoast.showToast(msg: "Added review");
+    Toast.show("Added review");
   } catch (e) {
-    Fluttertoast.showToast(msg: "msg:$e");
+    Toast.show("msg:$e");
   }
 }
 
@@ -28,13 +29,36 @@ class AuthService {
   Future registerWithEmailAndPassword(
       String email, String password, String name) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      User user = result.user!;
-      user.updateDisplayName(name);
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User user = userCredential.user!;
+      await user.updateDisplayName(name);
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // final usernameColl =
+      //     firestore.collection("users").doc(user.uid).collection("name").doc();
+      // await usernameColl.set({"name": user.displayName.toString()});
+
+      Toast.show("user Register succesfully",
+          duration: 2,
+          backgroundColor: Colors.white,
+          textStyle: TextStyle(color: Colors.black));
       return user;
-    } catch (error) {
-      print(error.toString());
+      // Do something with the user object
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        Toast.show('The password provided is too weak.', duration: 3);
+        return null;
+      } else if (e.code == 'email-already-in-use') {
+        Toast.show('The account already exists for that email.', duration: 3);
+        return null;
+      }
+    } catch (e) {
+      Toast.show(e.toString(), duration: 3);
       return null;
     }
   }
@@ -42,13 +66,29 @@ class AuthService {
   // Sign in with email and password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      User user = result.user!;
-      return user;
-    } catch (error) {
-      print(error.toString());
-      return null;
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User user = userCredential.user!;
+      Toast.show("Welcome",
+          duration: 2,
+          backgroundColor: Colors.white,
+          textStyle: TextStyle(color: Colors.black));
+      return true;
+      // Do something with the user object
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        Toast.show('No user found for that email.', duration: 3);
+      } else if (e.code == 'wrong-password') {
+        Toast.show('Wrong password provided for that user.', duration: 3);
+      } else {
+        Toast.show(e.toString(), duration: 3);
+      }
+      return false;
+    } catch (e) {
+      Toast.show(e.toString(), duration: 3);
+      return false;
     }
   }
 

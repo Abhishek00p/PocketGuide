@@ -12,6 +12,7 @@ import 'package:pocketguide/helper/login.dart';
 import 'package:pocketguide/tabs/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'helper/authenticateuser.dart';
 import 'news.dart';
 
 void main() async {
@@ -48,7 +49,7 @@ Future<void> _firebaseMessagingOnMessageOpenedApp(RemoteMessage message) async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: WelcomePage(),
     );
@@ -67,7 +68,7 @@ class _WelcomePageState extends State<WelcomePage> {
     Timer(
         Duration(seconds: 3),
         () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage())));
+            context, MaterialPageRoute(builder: (context) => Authenticate())));
   }
 
   @override
