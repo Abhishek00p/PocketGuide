@@ -23,7 +23,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _controll = Get.put(GetXControllers());
-  var isBookMarked = false;
 
   getDAta() async {
     return await Database().loadData();
@@ -205,137 +204,143 @@ class _HomePageState extends State<HomePage> {
 
                           // print("--------${modelData.image}");
                           var booking = false;
+
+                          var isBookmarked = checkIfBookMarked(modelData.title);
                           return Padding(
                             padding: const EdgeInsets.only(left: 22.0),
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => FinalPage(
-                                                    isCameraImage: false,
-                                                    image: modelData.image,
-                                                    location: modelData.city,
-                                                    description:
-                                                        modelData.description,
-                                                    rating: "3.5",
-                                                    title: modelData.title,
-                                                  )));
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(72),
-                                          topRight: Radius.circular(72)),
-                                      child: Image.network(
-                                        modelData.image,
-                                        fit: BoxFit.fill,
-                                        width: 296,
-                                        height: 464,
+                            child: Container(
+                              height: h * 0.6,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    child: InkWell(
+                                      onTap: () async {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => FinalPage(
+                                                      isCameraImage: false,
+                                                      image: modelData.image,
+                                                      location: modelData.city,
+                                                      description:
+                                                          modelData.description,
+                                                      rating: "3.5",
+                                                      title: modelData.title,
+                                                    )));
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(72),
+                                            topRight: Radius.circular(72)),
+                                        child: Image.network(
+                                          modelData.image,
+                                          fit: BoxFit.fill,
+                                          height: h * 0.6,
+                                          width: w * 0.82,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                    bottom: 15,
+                                  Positioned(
+                                      bottom: 15,
+                                      left: 20,
+                                      child: IconButton(
+                                          onPressed: () async {
+                                            if (isBookmarked) {
+                                              await BookMarkFunctions()
+                                                  .removeFromBookMark(
+                                                      modelData.title);
+
+                                              Toast.show(
+                                                  "Removed from BookMark",
+                                                  backgroundColor: mywhite,
+                                                  textStyle: TextStyle(
+                                                      color: mybackground,
+                                                      fontFamily: "Poppins",
+                                                      fontSize: 14));
+                                              isBookmarked = false;
+                                              setState(() {});
+                                            } else {
+                                              await BookMarkFunctions()
+                                                  .addMyBookMark(
+                                                      modelData.image,
+                                                      modelData.title,
+                                                      "3.5",
+                                                      modelData.description,
+                                                      false,
+                                                      modelData.city);
+
+                                              Toast.show("Added to BookMark",
+                                                  backgroundColor: mywhite,
+                                                  textStyle: TextStyle(
+                                                      color: mybackground,
+                                                      fontFamily: "Poppins",
+                                                      fontSize: 14));
+                                              isBookmarked = true;
+                                              setState(() {});
+                                            }
+                                          },
+                                          icon: isBookmarked
+                                              ? Icon(
+                                                  Icons.bookmark,
+                                                  size: 25,
+                                                  color: myyellow,
+                                                )
+                                              : Icon(
+                                                  Icons
+                                                      .bookmark_border_outlined,
+                                                  size: 25,
+                                                  color: myyellow,
+                                                ))),
+                                  Positioned(
+                                    top: 40,
                                     left: 20,
-                                    child: IconButton(
-                                        onPressed: () async {
-                                          isBookMarked =
-                                              await checkIfBookMarked(
-                                                  modelData.title);
-
-                                          if (isBookMarked) {
-                                            await BookMarkFunctions()
-                                                .removeFromBookMark(
-                                                    modelData.title);
-
-                                            Toast.show("Removed from BookMark",
-                                                backgroundColor: mywhite,
-                                                textStyle: TextStyle(
-                                                    color: mybackground,
-                                                    fontFamily: "Poppins",
-                                                    fontSize: 14));
-                                          } else {
-                                            await BookMarkFunctions()
-                                                .addMyBookMark(
-                                                    modelData.image,
-                                                    modelData.title,
-                                                    "3.5",
-                                                    modelData.description,
-                                                    false,
-                                                    modelData.city);
-
-                                            Toast.show("Added to BookMark",
-                                                backgroundColor: mywhite,
-                                                textStyle: TextStyle(
-                                                    color: mybackground,
-                                                    fontFamily: "Poppins",
-                                                    fontSize: 14));
-                                          }
-                                          setState(() {});
-                                        },
-                                        icon: isBookMarked
-                                            ? Icon(
-                                                Icons.bookmark,
-                                                size: 25,
-                                                color: myyellow,
-                                              )
-                                            : Icon(
-                                                Icons.bookmark_border_outlined,
-                                                size: 25,
-                                                color: myyellow,
-                                              ))),
-                                Positioned(
-                                  top: 40,
-                                  left: 20,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "4.8 *",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Poppins",
-                                            color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "Recommanded",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Poppins",
-                                            color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        modelData.title,
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontFamily: "Poppins",
-                                            color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        "Mumbai maharashtra",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Poppins",
-                                            color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "4.8 *",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "Poppins",
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "Recommanded",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "Poppins",
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          modelData.title,
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              fontFamily: "Poppins",
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "Mumbai maharashtra",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "Poppins",
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -399,11 +404,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-checkIfBookMarked(String title) {
+bool checkIfBookMarked(String title) {
   final _control = Get.put(GetXControllers());
   for (var element in _control.BookMarkList) {
     if (element["title"] == title) {
-      return true;
+      return element["isbookMarked"];
     }
   }
   return false;

@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         isLoading = true;
       });
+
       await AuthService()
           .signInWithEmailAndPassword(
               _emailController.text, _passwordController.text)
@@ -40,7 +41,6 @@ class _LoginPageState extends State<LoginPage> {
           setState(() {
             isLoading = false;
           });
-          final data = await Database().loadData();
           Get.to(() => HomePage());
         } else {
           _emailController.clear();
