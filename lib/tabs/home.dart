@@ -15,6 +15,7 @@ import 'package:toast/toast.dart';
 import 'package:pocketguide/screens/databse.dart';
 
 import '../api/model.dart';
+import 'chatroom.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -108,306 +109,342 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-          height: 80,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              InkWell(
-                onTap: () {},
-                child: Container(
-                  height: 75,
-                  width: w / 4.1,
-                  child: Center(
-                    child: Icon(
-                      Icons.home,
-                      color: myyellow,
-                    ),
-                  ),
-                ),
-              ),
-              FutureBuilder(
-                  future: getDAta(),
-                  builder: (context, snap) {
-                    if (snap.connectionState == ConnectionState.done) {
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Explore(data: snap.data)));
-                        },
-                        child: Container(
-                            height: 75,
-                            width: w / 4.1,
-                            child: Center(
-                                child:
-                                    Image.asset("assets/image/Compass.png"))),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  }),
-              InkWell(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NewsPage()));
-                },
-                child: Container(
-                  height: 75,
-                  width: w / 4.1,
-                  child: Center(
-                    child: Icon(
-                      Icons.newspaper,
-                      color: myyellow,
-                    ),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BookMark()));
-                },
-                child: Container(
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
+                color: Colors.white.withOpacity(0.05)),
+            height: h * 0.08,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {},
+                  child: Container(
                     height: 75,
                     width: w / 4.1,
                     child: Center(
-                        child: Image.asset("assets/image/Bookmark.png"))),
-              )
-            ],
-          )),
-      body: Container(
-        height: h,
-        width: w,
-        child: Column(
-          children: [
-            SizedBox(
-              height: 15,
-            ),
-            Divider(
-              indent: 40,
-              thickness: 2.5,
-              color: myyellow,
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 12, right: 12),
-              child: Container(
-                height: h / 1.66,
-                child: FutureBuilder(
-                  future: getDAta(),
-                  builder: (context, AsyncSnapshot snap) {
-                    if (snap.connectionState == ConnectionState.done) {
-                      return ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
-                          final usableData = snap.data!["res"].keys;
-                          // print("--$usableData");
-                          final modelData = Model.fromJson(
-                              snap.data!["res"][usableData.toList()[index]]);
+                      child: Icon(
+                        Icons.home,
+                        color: myyellow,
+                      ),
+                    ),
+                  ),
+                ),
+                FutureBuilder(
+                    future: getDAta(),
+                    builder: (context, snap) {
+                      if (snap.connectionState == ConnectionState.done) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Explore(data: snap.data)));
+                          },
+                          child: Container(
+                              height: 75,
+                              width: w / 4.3,
+                              child: Center(
+                                  child:
+                                      Image.asset("assets/image/Compass.png"))),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => NewsPage()));
+                  },
+                  child: Container(
+                    height: 75,
+                    width: w / 4.3,
+                    child: Center(
+                      child: Icon(
+                        Icons.newspaper,
+                        color: myyellow,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => BookMark()));
+                  },
+                  child: Container(
+                      height: 75,
+                      width: w / 4.3,
+                      child: Center(
+                          child: Image.asset("assets/image/Bookmark.png"))),
+                )
+              ],
+            )),
+      ),
+      body: SafeArea(
+        child: Container(
+          height: h,
+          width: w,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 15,
+              ),
+              Divider(
+                indent: 40,
+                thickness: 2.5,
+                color: myyellow,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 12, right: 12),
+                child: Container(
+                  height: h / 1.66,
+                  child: FutureBuilder(
+                    future: getDAta(),
+                    builder: (context, AsyncSnapshot snap) {
+                      if (snap.connectionState == ConnectionState.done) {
+                        return ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 5,
+                          itemBuilder: (context, index) {
+                            final usableData = snap.data!["res"].keys;
+                            // print("--$usableData");
+                            final modelData = Model.fromJson(
+                                snap.data!["res"][usableData.toList()[index]]);
 
-                          // print("--------${modelData.image}");
-                          var booking = false;
+                            // print("--------${modelData.image}");
+                            var booking = false;
 
-                          var isBookmarked = checkIfBookMarked(modelData.title);
-                          return Padding(
-                            padding: const EdgeInsets.only(left: 22.0),
-                            child: Container(
-                              height: h * 0.6,
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => FinalPage(
-                                                      isCameraImage: false,
-                                                      image: modelData.image,
-                                                      location: modelData.city,
-                                                      description:
-                                                          modelData.description,
-                                                      rating: "3.5",
-                                                      title: modelData.title,
-                                                    )));
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.only(
-                                            bottomLeft: Radius.circular(72),
-                                            topRight: Radius.circular(72)),
-                                        child: Image.network(
-                                          modelData.image,
-                                          fit: BoxFit.fill,
-                                          height: h * 0.6,
-                                          width: w * 0.82,
+                            var isBookmarked =
+                                checkIfBookMarked(modelData.title);
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 22.0),
+                              child: Container(
+                                height: h * 0.6,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      child: InkWell(
+                                        onTap: () async {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FinalPage(
+                                                        isCameraImage: false,
+                                                        image: modelData.image,
+                                                        location:
+                                                            modelData.city,
+                                                        description: modelData
+                                                            .description,
+                                                        rating: "3.5",
+                                                        title: modelData.title,
+                                                      )));
+                                        },
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.only(
+                                              bottomLeft: Radius.circular(72),
+                                              topRight: Radius.circular(72)),
+                                          child: Image.network(
+                                            modelData.image,
+                                            fit: BoxFit.fill,
+                                            height: h * 0.6,
+                                            width: w * 0.82,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                      bottom: 15,
+                                    Positioned(
+                                        bottom: 15,
+                                        left: 20,
+                                        child: IconButton(
+                                            onPressed: () async {
+                                              if (isBookmarked) {
+                                                await BookMarkFunctions()
+                                                    .removeFromBookMark(
+                                                        modelData.title);
+
+                                                Toast.show(
+                                                    "Removed from BookMark",
+                                                    backgroundColor: mywhite,
+                                                    textStyle: TextStyle(
+                                                        color: mybackground,
+                                                        fontFamily: "Poppins",
+                                                        fontSize: 14));
+                                                isBookmarked = false;
+                                                setState(() {});
+                                              } else {
+                                                await BookMarkFunctions()
+                                                    .addMyBookMark(
+                                                        modelData.image,
+                                                        modelData.title,
+                                                        "3.5",
+                                                        modelData.description,
+                                                        false,
+                                                        modelData.city);
+
+                                                Toast.show("Added to BookMark",
+                                                    backgroundColor: mywhite,
+                                                    textStyle: TextStyle(
+                                                        color: mybackground,
+                                                        fontFamily: "Poppins",
+                                                        fontSize: 14));
+                                                isBookmarked = true;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: isBookmarked
+                                                ? Icon(
+                                                    Icons.bookmark,
+                                                    size: 25,
+                                                    color: myyellow,
+                                                  )
+                                                : Icon(
+                                                    Icons
+                                                        .bookmark_border_outlined,
+                                                    size: 25,
+                                                    color: myyellow,
+                                                  ))),
+                                    Positioned(
+                                      top: 40,
                                       left: 20,
-                                      child: IconButton(
-                                          onPressed: () async {
-                                            if (isBookmarked) {
-                                              await BookMarkFunctions()
-                                                  .removeFromBookMark(
-                                                      modelData.title);
-
-                                              Toast.show(
-                                                  "Removed from BookMark",
-                                                  backgroundColor: mywhite,
-                                                  textStyle: TextStyle(
-                                                      color: mybackground,
-                                                      fontFamily: "Poppins",
-                                                      fontSize: 14));
-                                              isBookmarked = false;
-                                              setState(() {});
-                                            } else {
-                                              await BookMarkFunctions()
-                                                  .addMyBookMark(
-                                                      modelData.image,
-                                                      modelData.title,
-                                                      "3.5",
-                                                      modelData.description,
-                                                      false,
-                                                      modelData.city);
-
-                                              Toast.show("Added to BookMark",
-                                                  backgroundColor: mywhite,
-                                                  textStyle: TextStyle(
-                                                      color: mybackground,
-                                                      fontFamily: "Poppins",
-                                                      fontSize: 14));
-                                              isBookmarked = true;
-                                              setState(() {});
-                                            }
-                                          },
-                                          icon: isBookmarked
-                                              ? Icon(
-                                                  Icons.bookmark,
-                                                  size: 25,
-                                                  color: myyellow,
-                                                )
-                                              : Icon(
-                                                  Icons
-                                                      .bookmark_border_outlined,
-                                                  size: 25,
-                                                  color: myyellow,
-                                                ))),
-                                  Positioned(
-                                    top: 40,
-                                    left: 20,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "4.8 *",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Poppins",
-                                              color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          "Recommanded",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Poppins",
-                                              color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          modelData.title,
-                                          style: TextStyle(
-                                              fontSize: 24,
-                                              fontFamily: "Poppins",
-                                              color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Text(
-                                          "Mumbai maharashtra",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Poppins",
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "4.8 *",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Poppins",
+                                                color: Colors.white),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            "Recommanded",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Poppins",
+                                                color: Colors.white),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            modelData.title,
+                                            style: TextStyle(
+                                                fontSize: 24,
+                                                fontFamily: "Poppins",
+                                                color: Colors.white),
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Text(
+                                            "Mumbai maharashtra",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Poppins",
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
+                            );
+                          },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Divider(
-              endIndent: 34,
-              thickness: 2.5,
-              color: myyellow,
-            ),
-            Container(
-                height: 40,
-                padding: EdgeInsets.only(top: 10),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 15,
-                      left: 60,
-                      child: Text(
-                        "Scan your vista",
-                        style: TextStyle(
-                            color: mywhite,
-                            fontFamily: "Inter",
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                    Positioned(
-                      right: 30,
-                      child: InkWell(
-                        onTap: () async {
-                          await availableCameras()
-                              .then((value) => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Scanner(
-                                            cameras: value,
-                                          ))));
-                        },
-                        child: Image.asset(
-                          "assets/image/scan.png",
-                          height: 33,
+              SizedBox(
+                height: 15,
+              ),
+              Divider(
+                endIndent: 34,
+                thickness: 2.5,
+                color: myyellow,
+              ),
+              Container(
+                  height: h * 0.07,
+                  padding: EdgeInsets.only(top: 10),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 15,
+                        left: 60,
+                        child: Text(
+                          "Scan your vista",
+                          style: TextStyle(
+                              color: mywhite,
+                              fontFamily: "Inter",
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
                         ),
                       ),
-                    )
-                  ],
-                ))
-          ],
+                      Positioned(
+                        left: 15,
+                        child: InkWell(
+                          onTap: () async {
+                            await availableCameras()
+                                .then((value) => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Scanner(
+                                              cameras: value,
+                                            ))));
+                          },
+                          child: Image.asset(
+                            "assets/image/scan.png",
+                            height: 33,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 15,
+                        top: 0,
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) => ChatRoom()));
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                "Need a Guide ? ",
+                                style: TextStyle(
+                                    color: mywhite,
+                                    fontSize: 16,
+                                    fontFamily: "Inter"),
+                              ),
+                              Image.asset(
+                                "assets/image/guider.png",
+                                height: 45,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ))
+            ],
+          ),
         ),
       ),
     );

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pocketguide/tabs/home.dart';
 import 'package:toast/toast.dart';
 
-import '../api/model.dart';
 import 'login.dart';
 
 class Authenticate extends StatefulWidget {
