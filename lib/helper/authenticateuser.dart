@@ -23,6 +23,7 @@ class _AuthenticateState extends State<Authenticate> {
     final auth = FirebaseAuth.instance;
     ToastContext().init(context);
     if (auth.currentUser != null) {
+      print("user ${auth.currentUser!.uid}");
       return HomePage();
     } else {
       return LoginPage();

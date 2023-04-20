@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketguide/helper/colors.dart';
+import 'package:pocketguide/tabs/personalChatRoom.dart';
+import 'guide.dart';
 
 class ChatRoom extends StatefulWidget {
   const ChatRoom({super.key});
@@ -18,12 +22,34 @@ class _ChatRoomState extends State<ChatRoom>
     _tabController = TabController(length: 2, vsync: this);
   }
 
-  final GuideList = {
-    "Mumbai": ["RAhul", "Nimesh", "Pratap", "komal"],
-    "Nashik": ["r", "n", "p", "k"],
-    "Pune": ["Pratap", "komal", "RAhul", "Nimesh"],
-    "Nagpur": ["komal", "RAhul", "Nimesh", "Pratap"],
-  };
+  getallGuides({String? dropvalue}) async {
+    if (dropvalue == "Mumbai") {
+      return await FirebaseFirestore.instance
+          .collection("guides")
+          .where("place", isEqualTo: "Mumbai")
+          .get();
+    }
+    if (dropvalue == "Nashik") {
+      return await FirebaseFirestore.instance
+          .collection("guides")
+          .where("place", isEqualTo: "Nashik")
+          .get();
+    }
+    if (dropvalue == "Pune") {
+      return await FirebaseFirestore.instance
+          .collection("guides")
+          .where("place", isEqualTo: "Pune")
+          .get();
+    }
+    if (dropvalue == "Nagpur") {
+      return await FirebaseFirestore.instance
+          .collection("guides")
+          .where("place", isEqualTo: "Nagpur")
+          .get();
+    }
+
+    return await FirebaseFirestore.instance.collection("guides").get();
+  }
 
   var _dropvalue = "Mumbai";
 
@@ -112,6 +138,22 @@ class _ChatRoomState extends State<ChatRoom>
                   SizedBox(
                     height: 20,
                   ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     Navigator.push(context,
+                  //         MaterialPageRoute(builder: (_) => Creategude()));
+                  //   },
+                  //   child: Container(
+                  //     height: 50,
+                  //     width: 120,
+                  //     child: Center(
+                  //       child: Text("aDd guide"),
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
                   Expanded(
                     child: TabBarView(
                       physics: NeverScrollableScrollPhysics(),
@@ -187,53 +229,94 @@ class _ChatRoomState extends State<ChatRoom>
                               height: 15,
                             ),
                             Expanded(
-                              child: ListView.builder(
-                                  itemCount: GuideList[_dropvalue]!.length,
-                                  itemBuilder: (_, ind) {
-                                    return Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 15),
-                                      child: InkWell(
-                                        onTap: () {},
-                                        child: Container(
-                                          height: h * 0.1,
-                                          width: w * 0.8,
-                                          decoration: BoxDecoration(
-                                              border:
-                                                  Border.all(color: mywhite),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.white
-                                                  .withOpacity(0.4)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Container(
-                                                height: h * 0.8,
-                                                width: w * 0.2,
-                                                child: ClipRRect(
+                              child: FutureBuilder(
+                                future: getallGuides(dropvalue: _dropvalue),
+                                builder: (context, AsyncSnapshot snap) {
+                                  if (snap.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  if (snap.hasError || !snap.hasData) {
+                                    return Center(
+                                      child: Text("Something missing"),
+                                    );
+                                  }
+
+                                  print(
+                                      "Data from drop : ${snap.data.docs.first.data()}");
+
+                                  return ListView.builder(
+                                      itemCount: snap.data.docs.length,
+                                      itemBuilder: (_, ind) {
+                                        final docData =
+                                            snap.data.docs[ind].data();
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 15),
+                                          child: InkWell(
+                                            onTap: () {
+                                              final senderID = FirebaseAuth
+                                                  .instance.currentUser!.uid;
+                                              final recId = docData["uid"];
+
+                                              final chatroomID =
+                                                  senderID + recId;
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ChatMessagesScreen(
+                                                            chatroomId:
+                                                                chatroomID,
+                                                            senderId: senderID,
+                                                            receiverId: recId,
+                                                          )));
+                                            },
+                                            child: Container(
+                                              height: h * 0.1,
+                                              width: w * 0.8,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: mywhite),
                                                   borderRadius:
                                                       BorderRadius.circular(8),
-                                                  child: Image.asset(
-                                                    "assets/image/dummyGuide.jfif",
-                                                    fit: BoxFit.fill,
+                                                  color: Colors.white
+                                                      .withOpacity(0.4)),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Container(
+                                                    height: h * 0.8,
+                                                    width: w * 0.2,
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      child: Image.asset(
+                                                        "assets/image/dummyGuide.jfif",
+                                                        fit: BoxFit.fill,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  Text(
+                                                    docData["name"],
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: mybackground),
+                                                  ),
+                                                  SizedBox()
+                                                ],
                                               ),
-                                              Text(
-                                                GuideList[_dropvalue]![ind],
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: mybackground),
-                                              ),
-                                              SizedBox()
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                                        );
+                                      });
+                                },
+                              ),
                             )
                           ],
                         ),
@@ -246,54 +329,94 @@ class _ChatRoomState extends State<ChatRoom>
                                 height: 15,
                               ),
                               Expanded(
-                                child: ListView.builder(
-                                    itemCount: GuideList[_dropvalue]!.length,
-                                    itemBuilder: (_, ind) {
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 15),
-                                        child: InkWell(
-                                          onTap: () {},
-                                          child: Container(
-                                            height: h * 0.09,
-                                            width: w * 0.8,
-                                            decoration: BoxDecoration(
-                                                border:
-                                                    Border.all(color: mywhite),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                color: Colors.white
-                                                    .withOpacity(0.4)),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Container(
-                                                  height: h * 0.07,
-                                                  width: w * 0.15,
-                                                  child: ClipRRect(
+                                child: FutureBuilder(
+                                  future: getallGuides(),
+                                  builder: (context, AsyncSnapshot snap) {
+                                    if (snap.hasError || !snap.hasData) {
+                                      return Center(
+                                        child: Text("Something missing"),
+                                      );
+                                    }
+                                    if (snap.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    print(
+                                        "Data from chat : ${snap.data.runtimeType}");
+                                    return ListView.builder(
+                                        itemCount: snap.data.docs.length,
+                                        itemBuilder: (_, ind) {
+                                          final docData =
+                                              snap.data.docs[ind].data();
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 15),
+                                            child: InkWell(
+                                              onTap: () {
+                                                final senderID = FirebaseAuth
+                                                    .instance.currentUser!.uid;
+                                                final recId = docData["uid"];
+
+                                                final chatroomID =
+                                                    senderID + recId;
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ChatMessagesScreen(
+                                                              chatroomId:
+                                                                  chatroomID,
+                                                              senderId:
+                                                                  senderID,
+                                                              receiverId: recId,
+                                                            )));
+                                              },
+                                              child: Container(
+                                                height: h * 0.09,
+                                                width: w * 0.8,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: mywhite),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             8),
-                                                    child: Image.asset(
-                                                      "assets/image/dummyUser.png",
-                                                      fit: BoxFit.fill,
+                                                    color: Colors.white
+                                                        .withOpacity(0.4)),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Container(
+                                                      height: h * 0.07,
+                                                      width: w * 0.15,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        child: Image.asset(
+                                                          "assets/image/dummyUser.png",
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    Text(
+                                                      docData["name"],
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color: mybackground),
+                                                    ),
+                                                    SizedBox()
+                                                  ],
                                                 ),
-                                                Text(
-                                                  GuideList[_dropvalue]![ind],
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: mybackground),
-                                                ),
-                                                SizedBox()
-                                              ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
+                                          );
+                                        });
+                                  },
+                                ),
                               )
                             ],
                           ),

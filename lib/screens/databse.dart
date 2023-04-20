@@ -39,9 +39,12 @@ class AuthService {
 
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // final usernameColl =
-      //     firestore.collection("users").doc(user.uid).collection("name").doc();
-      // await usernameColl.set({"name": user.displayName.toString()});
+      await firestore.collection("allUser").doc(user.uid).set({
+        "name": name,
+        "photourl": "",
+        "uid": "${user.uid}",
+        "bookmarks": []
+      });
 
       Toast.show("user Register succesfully",
           duration: 2,

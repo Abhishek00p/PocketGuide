@@ -1,4 +1,6 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/helper/login.dart';
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _controll.dispose();
     super.dispose();
   }
 
@@ -55,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               child: IconButton(
                   onPressed: () async {
                     await AuthService().signOut();
-                    await Navigator.pushReplacement(context,
+                    await Navigator.push(context,
                         MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   icon: Icon(
@@ -223,8 +226,8 @@ class _HomePageState extends State<HomePage> {
                             // print("--------${modelData.image}");
                             var booking = false;
 
-                            var isBookmarked =
-                                checkIfBookMarked(modelData.title);
+                            // var isBookmarked =
+                            //     checkIfBookMarked(modelData.title);
                             return Padding(
                               padding: const EdgeInsets.only(left: 22.0),
                               child: Container(
@@ -267,52 +270,59 @@ class _HomePageState extends State<HomePage> {
                                         left: 20,
                                         child: IconButton(
                                             onPressed: () async {
-                                              if (isBookmarked) {
-                                                await BookMarkFunctions()
-                                                    .removeFromBookMark(
-                                                        modelData.title);
+                                              // if (isBookmarked) {
+                                              //   await BookMarkFunctions()
+                                              //       .removeFromBookMark(
+                                              //           modelData.title);
 
-                                                Toast.show(
-                                                    "Removed from BookMark",
-                                                    backgroundColor: mywhite,
-                                                    textStyle: TextStyle(
-                                                        color: mybackground,
-                                                        fontFamily: "Poppins",
-                                                        fontSize: 14));
-                                                isBookmarked = false;
-                                                setState(() {});
-                                              } else {
-                                                await BookMarkFunctions()
-                                                    .addMyBookMark(
-                                                        modelData.image,
-                                                        modelData.title,
-                                                        "3.5",
-                                                        modelData.description,
-                                                        false,
-                                                        modelData.city);
+                                              //   Toast.show(
+                                              //       "Removed from BookMark",
+                                              //       backgroundColor: mywhite,
+                                              //       textStyle: TextStyle(
+                                              //           color: mybackground,
+                                              //           fontFamily: "Poppins",
+                                              //           fontSize: 14));
+                                              //   isBookmarked = false;
+                                              //   setState(() {});
+                                              // } else {
+                                              //   await BookMarkFunctions()
+                                              //       .addMyBookMark(
+                                              //           modelData.image,
+                                              //           modelData.title,
+                                              //           "3.5",
+                                              //           modelData.description,
+                                              //           false,
+                                              //           modelData.city);
 
-                                                Toast.show("Added to BookMark",
-                                                    backgroundColor: mywhite,
-                                                    textStyle: TextStyle(
-                                                        color: mybackground,
-                                                        fontFamily: "Poppins",
-                                                        fontSize: 14));
-                                                isBookmarked = true;
-                                                setState(() {});
-                                              }
+                                              //   Toast.show("Added to BookMark",
+                                              //       backgroundColor: mywhite,
+                                              //       textStyle: TextStyle(
+                                              //           color: mybackground,
+                                              //           fontFamily: "Poppins",
+                                              //           fontSize: 14));
+                                              //   isBookmarked = true;
+                                              //   setState(() {});
+                                              // }
                                             },
-                                            icon: isBookmarked
-                                                ? Icon(
-                                                    Icons.bookmark,
-                                                    size: 25,
-                                                    color: myyellow,
-                                                  )
-                                                : Icon(
-                                                    Icons
-                                                        .bookmark_border_outlined,
-                                                    size: 25,
-                                                    color: myyellow,
-                                                  ))),
+                                            icon: Icon(
+                                              Icons.bookmark,
+                                              size: 25,
+                                              color: myyellow,
+                                            )
+                                            //  isBookmarked
+                                            //     ? Icon(
+                                            //         Icons.bookmark,
+                                            //         size: 25,
+                                            //         color: myyellow,
+                                            //       )
+                                            //     : Icon(
+                                            //         Icons
+                                            //             .bookmark_border_outlined,
+                                            //         size: 25,
+                                            //         color: myyellow,
+                                            //       )
+
+                                            )),
                                     Positioned(
                                       top: 40,
                                       left: 20,
@@ -451,12 +461,8 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-bool checkIfBookMarked(String title) {
-  final _control = Get.put(GetXControllers());
-  for (var element in _control.BookMarkList) {
-    if (element["title"] == title) {
-      return element["isbookMarked"];
-    }
-  }
-  return false;
-}
+// bool checkIfBookMarked(String title) {
+//   final user = FirebaseAuth.instance.currentUser!;
+//   final firestore =
+//       FirebaseFirestore.instance.collection("allUser").doc(user.uid);
+// }
