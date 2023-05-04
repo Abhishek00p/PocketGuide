@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/helper/login.dart';
@@ -31,9 +32,38 @@ class _HomePageState extends State<HomePage> {
     return await Database().loadData();
   }
 
+  getFirebaseMesgToken() async {
+    FirebaseMessaging fmessaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await fmessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    final fireref = await FirebaseFirestore.instance
+        .collection("allUser")
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+
+    await fmessaging.getToken().then((value) {
+      if (value != null) {
+        print("tokken :$value");
+        fireref.update({"pushtoken": value});
+      }
+    });
+  }
+
+  var username;
   @override
   void initState() {
     super.initState();
+    username = FirebaseAuth.instance.currentUser!.displayName;
+
+    getFirebaseMesgToken();
   }
 
   @override
@@ -49,7 +79,6 @@ class _HomePageState extends State<HomePage> {
 
     ToastContext().init(context);
 
-    final username = FirebaseAuth.instance.currentUser!.displayName;
     return Scaffold(
       backgroundColor: Color.fromRGBO(27, 50, 50, 1),
       appBar: AppBar(
