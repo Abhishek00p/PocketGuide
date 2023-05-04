@@ -48,6 +48,8 @@ class _HomePageState extends State<HomePage> {
     final w = MediaQuery.of(context).size.width;
 
     ToastContext().init(context);
+
+    final username = FirebaseAuth.instance.currentUser!.displayName;
     return Scaffold(
       backgroundColor: Color.fromRGBO(27, 50, 50, 1),
       appBar: AppBar(
@@ -195,7 +197,11 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               SizedBox(
-                height: 15,
+                height: 2,
+              ),
+              Text(
+                "Hello, $username ",
+                style: TextStyle(color: mywhite),
               ),
               Divider(
                 indent: 40,

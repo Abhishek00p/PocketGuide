@@ -260,9 +260,10 @@ class _ChatRoomState extends State<ChatRoom>
                                               final senderID = FirebaseAuth
                                                   .instance.currentUser!.uid;
                                               final recId = docData["uid"];
-
+                                              final mylist = [senderID, recId];
+                                              mylist.sort();
                                               final chatroomID =
-                                                  senderID + recId;
+                                                  mylist[0] + "_" + mylist[1];
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -361,6 +362,7 @@ class _ChatRoomState extends State<ChatRoom>
 
                                                 final chatroomID =
                                                     senderID + recId;
+
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(

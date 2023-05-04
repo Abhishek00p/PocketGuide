@@ -56,6 +56,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
+
     Timer(
         Duration(seconds: 3),
         () => Navigator.push(

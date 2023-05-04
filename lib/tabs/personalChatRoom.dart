@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:pocketguide/helper/colors.dart';
 
 class ChatMessagesScreen extends StatefulWidget {
@@ -84,9 +86,35 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data() as Map<String, dynamic>;
-                      return ListTile(
-                        title: Text(data['content']),
-                        subtitle: Text(data['timestamp'].toString()),
+
+                      final userr = FirebaseAuth.instance.currentUser!.uid;
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        child: Align(
+                          alignment: data["senderId"] != userr
+                              ? Alignment.bottomLeft
+                              : Alignment.bottomRight,
+                          child: Container(
+                            width: w * 0.7,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(color: Colors.white)),
+                            child: ListTile(
+                              title: Text(
+                                data['content'],
+                                style: TextStyle(color: mywhite),
+                              ),
+                              subtitle: Text(
+                                DateFormat('yyyy-MM-dd H:m')
+                                    .format(data['timestamp'].toDate()),
+                                style: TextStyle(
+                                    color: myyellow,
+                                    fontWeight: FontWeight.w200),
+                              ),
+                            ),
+                          ),
+                        ),
                       );
                     }).toList(),
                   );
@@ -107,11 +135,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                   decoration: InputDecoration(
                       suffixIcon: IconButton(
                           onPressed: () async {
-                            await sendmyMessage(
-                                mesg: _mesgcontrooller.text,
-                                reciverID: widget.receiverId,
-                                senderIdd: widget.senderId,
-                                chatroom: widget.chatroomId);
+                            _mesgcontrooller.text.isNotEmpty
+                                ? await sendmyMessage(
+                                    mesg: _mesgcontrooller.text,
+                                    reciverID: widget.receiverId,
+                                    senderIdd: widget.senderId,
+                                    chatroom: widget.chatroomId)
+                                : null;
+                            _mesgcontrooller.clear();
                           },
                           icon: Icon(
                             Icons.send,
