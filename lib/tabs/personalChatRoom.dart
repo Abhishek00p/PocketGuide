@@ -175,5 +175,5 @@ sendmyMessage(
     "timestamp": DateTime.now()
   };
   await myref.collection("messages").doc().set(data);
-  await Database().postRequestNotification();
+  await Database().postRequestNotification(reciverID);
 }

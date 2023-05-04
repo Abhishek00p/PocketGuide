@@ -22,7 +22,7 @@ class Database {
     return {"res": resp, "len": await resp.keys.toList().length};
   }
 
-  Future<http.Response> postRequestNotification() async {
+  Future<http.Response> postRequestNotification(String recID) async {
     String url = 'https://fcm.googleapis.com/fcm/send';
     String token = dotenv.env["SERVERkEY"]!;
 
@@ -31,10 +31,8 @@ class Database {
       'Authorization': 'Bearer $token',
     };
 
-    final fireresp = await FirebaseFirestore.instance
-        .collection("allUser")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+    final fireresp =
+        await FirebaseFirestore.instance.collection("allUser").doc(recID).get();
 
     final userdata = fireresp.data();
     final usertoken = userdata!["pushtoken"];
