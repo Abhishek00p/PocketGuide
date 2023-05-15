@@ -22,6 +22,20 @@ class _ChatRoomState extends State<ChatRoom>
     _tabController = TabController(length: 2, vsync: this);
   }
 
+  getallChatsOfUser() async {
+    final userid = FirebaseAuth.instance.currentUser!.uid;
+    final messagesRef = FirebaseFirestore.instance.collection('chats');
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs =
+        await messagesRef.get().then((value) => value.docs);
+
+    List chatrooms = [];
+    for (var doc in docs) {
+      List users = doc.id.split('_');
+      users.contains(userid) ? chatrooms.add(doc.id) : null;
+    }
+    return chatrooms;
+  }
+
   getallGuides({String? dropvalue}) async {
     if (dropvalue == "Mumbai") {
       return await FirebaseFirestore.instance
@@ -59,6 +73,7 @@ class _ChatRoomState extends State<ChatRoom>
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
+    getallChatsOfUser();
     return Scaffold(
       backgroundColor: mybackground,
       appBar: AppBar(
@@ -252,6 +267,7 @@ class _ChatRoomState extends State<ChatRoom>
                                       itemBuilder: (_, ind) {
                                         final docData =
                                             snap.data.docs[ind].data();
+
                                         return Padding(
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 15),
@@ -331,7 +347,7 @@ class _ChatRoomState extends State<ChatRoom>
                               ),
                               Expanded(
                                 child: FutureBuilder(
-                                  future: getallGuides(),
+                                  future: getallChatsOfUser(),
                                   builder: (context, AsyncSnapshot snap) {
                                     if (snap.hasError || !snap.hasData) {
                                       return Center(
@@ -346,30 +362,34 @@ class _ChatRoomState extends State<ChatRoom>
                                     }
                                     print(
                                         "Data from chat : ${snap.data.runtimeType}");
+
+                                    final List chatrooms = snap.data;
+
                                     return ListView.builder(
-                                        itemCount: snap.data.docs.length,
+                                        itemCount: chatrooms.length,
                                         itemBuilder: (_, ind) {
-                                          final docData =
-                                              snap.data.docs[ind].data();
+                                          final senderID = FirebaseAuth
+                                              .instance.currentUser!.uid;
+                                          final alluser =
+                                              chatrooms[ind].split('_');
+
+                                          final recId = alluser[0] == senderID
+                                              ? alluser[1]
+                                              : alluser[0];
+
                                           return Padding(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 10, horizontal: 15),
                                             child: InkWell(
                                               onTap: () {
-                                                final senderID = FirebaseAuth
-                                                    .instance.currentUser!.uid;
-                                                final recId = docData["uid"];
-
-                                                final chatroomID =
-                                                    senderID + recId;
-
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             ChatMessagesScreen(
                                                               chatroomId:
-                                                                  chatroomID,
+                                                                  chatrooms[
+                                                                      ind],
                                                               senderId:
                                                                   senderID,
                                                               receiverId: recId,
@@ -404,11 +424,18 @@ class _ChatRoomState extends State<ChatRoom>
                                                         ),
                                                       ),
                                                     ),
-                                                    Text(
-                                                      docData["name"],
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color: mybackground),
+                                                    FutureBuilder(
+                                                      future: getName(recId),
+                                                      builder: (_, snapshot) {
+                                                        return Text(
+                                                          snapshot.data
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color:
+                                                                  mybackground),
+                                                        );
+                                                      },
                                                     ),
                                                     SizedBox()
                                                   ],
@@ -432,43 +459,13 @@ class _ChatRoomState extends State<ChatRoom>
   }
 }
 
+Future<String> getName(rid) async {
+  final userREf = FirebaseFirestore.instance
+      .collection("allUser")
+      .where("uid", isEqualTo: rid);
+  final userrefdata = await userREf.get().then((value) => value.docs.first);
+  final userData = await userrefdata.data();
 
-
-//  Padding(
-//               padding: const EdgeInsets.all(15.0),
-//               child: Container(
-//                 height: h * 0.08,
-//                 // color: Colors.red,
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                   children: [
-//                     Container(
-//                       height: h * 0.06,
-//                       width: w / 2.3,
-//                       decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(20),
-//                           color: myyellow),
-//                       child: Center(
-//                         child: Text(
-//                           "Find your Guide",
-//                           style: TextStyle(color: Colors.white),
-//                         ),
-//                       ),
-//                     ),
-//                     Container(
-//                       height: h * 0.06,
-//                       width: w / 2.3,
-//                       decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(20),
-//                           color: myyellow),
-//                       child: Center(
-//                         child: Text(
-//                           "Chats",
-//                           style: TextStyle(color: Colors.white),
-//                         ),
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             )
+  String nam = userData["name"];
+  return nam;
+}

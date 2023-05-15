@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -28,42 +29,29 @@ class GetXControllers extends GetxController {
 class BookMarkFunctions {
   final user = FirebaseAuth.instance.currentUser!;
 
-  addMyBookMark(image, String title, String rating, String description,
-      bool isCameraImage, String location) async {
-    final _firestore =
-        FirebaseFirestore.instance.collection("allUser").doc(user.uid);
+  addMyBookMark(String title) async {
+    final _firestore = await FirebaseFirestore.instance
+        .collection("allUser")
+        .doc(user.uid)
+        .collection("Bookmarks")
+        .doc(title);
 
-    await _firestore.get().then((DocumentSnapshot documentSnapshot) async {
-      if (documentSnapshot.exists) {
-        var field1Value = documentSnapshot['bookmarks'];
-        field1Value.add({
-          "image": image,
-          "isCameraImage": isCameraImage,
-          "location": location,
-          "description": description,
-          "title": title,
-          "rating": rating,
-        });
-
-        await _firestore.update({
-          "bookmarks": field1Value,
-          "name": user.displayName,
-          "photourl": "",
-          "uid": "${user.uid}"
-        });
-      } else {
-        print('Document does not exist');
-      }
-    });
+    await _firestore.set({"title": title});
   }
 
   removeFromBookMark(String title) async {
     final user = FirebaseAuth.instance.currentUser!;
-    final firestore =
-        FirebaseFirestore.instance.collection("allUser").doc(user.uid);
+    final firestore = await FirebaseFirestore.instance
+        .collection("allUser")
+        .doc(user.uid)
+        .collection("Bookmarks");
 
-    final bData = await firestore.get().then((value) async {
-      value["bookmarks"].removeWhere((val) => val["title"] == title);
-    });
+    final docD = await firestore.get();
+    for (var element in docD.docs) {
+      if (title.trim() == element.id.toString().trim()) {
+        await firestore.doc(element.id).delete().then(
+            (value) => Fluttertoast.showToast(msg: "Succesfully deleted"));
+      }
+    }
   }
 }

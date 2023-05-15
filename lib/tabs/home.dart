@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:pocketguide/helper/login.dart';
 import 'package:pocketguide/news.dart';
@@ -261,8 +262,8 @@ class _HomePageState extends State<HomePage> {
                             // print("--------${modelData.image}");
                             var booking = false;
 
-                            // var isBookmarked =
-                            //     checkIfBookMarked(modelData.title);
+                            var isBookmarked =
+                                checkIfBookMarked(modelData.title);
                             return Padding(
                               padding: const EdgeInsets.only(left: 22.0),
                               child: Container(
@@ -301,63 +302,49 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     Positioned(
-                                        bottom: 15,
-                                        left: 20,
-                                        child: IconButton(
-                                            onPressed: () async {
-                                              // if (isBookmarked) {
-                                              //   await BookMarkFunctions()
-                                              //       .removeFromBookMark(
-                                              //           modelData.title);
+                                      bottom: 15,
+                                      left: 20,
+                                      child: FutureBuilder(
+                                        future:
+                                            checkIfBookMarked(modelData.title),
+                                        builder: (context,
+                                            AsyncSnapshot<bool> snapshot) {
+                                          return snapshot.data != null
+                                              ? snapshot.data!
+                                                  ? IconButton(
+                                                      onPressed: () async {
+                                                        await BookMarkFunctions()
+                                                            .removeFromBookMark(
+                                                                modelData
+                                                                    .title);
 
-                                              //   Toast.show(
-                                              //       "Removed from BookMark",
-                                              //       backgroundColor: mywhite,
-                                              //       textStyle: TextStyle(
-                                              //           color: mybackground,
-                                              //           fontFamily: "Poppins",
-                                              //           fontSize: 14));
-                                              //   isBookmarked = false;
-                                              //   setState(() {});
-                                              // } else {
-                                              //   await BookMarkFunctions()
-                                              //       .addMyBookMark(
-                                              //           modelData.image,
-                                              //           modelData.title,
-                                              //           "3.5",
-                                              //           modelData.description,
-                                              //           false,
-                                              //           modelData.city);
+                                                        setState(() {});
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.bookmark,
+                                                        color: myyellow,
+                                                      ))
+                                                  : IconButton(
+                                                      onPressed: () async {
+                                                        await BookMarkFunctions()
+                                                            .addMyBookMark(
+                                                                modelData.title)
+                                                            .then((value) =>
+                                                                Fluttertoast
+                                                                    .showToast(
+                                                                        msg:
+                                                                            "Added"));
 
-                                              //   Toast.show("Added to BookMark",
-                                              //       backgroundColor: mywhite,
-                                              //       textStyle: TextStyle(
-                                              //           color: mybackground,
-                                              //           fontFamily: "Poppins",
-                                              //           fontSize: 14));
-                                              //   isBookmarked = true;
-                                              //   setState(() {});
-                                              // }
-                                            },
-                                            icon: Icon(
-                                              Icons.bookmark,
-                                              size: 25,
-                                              color: myyellow,
-                                            )
-                                            //  isBookmarked
-                                            //     ? Icon(
-                                            //         Icons.bookmark,
-                                            //         size: 25,
-                                            //         color: myyellow,
-                                            //       )
-                                            //     : Icon(
-                                            //         Icons
-                                            //             .bookmark_border_outlined,
-                                            //         size: 25,
-                                            //         color: myyellow,
-                                            //       )
-
-                                            )),
+                                                        setState(() {});
+                                                      },
+                                                      icon: Icon(
+                                                          Icons
+                                                              .bookmark_border_outlined,
+                                                          color: myyellow))
+                                              : SizedBox();
+                                        },
+                                      ),
+                                    ),
                                     Positioned(
                                       top: 40,
                                       left: 20,
@@ -496,8 +483,18 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// bool checkIfBookMarked(String title) {
-//   final user = FirebaseAuth.instance.currentUser!;
-//   final firestore =
-//       FirebaseFirestore.instance.collection("allUser").doc(user.uid);
-// }
+Future<bool> checkIfBookMarked(String title) async {
+  final user = FirebaseAuth.instance.currentUser!;
+  final firestore = await FirebaseFirestore.instance
+      .collection("allUser")
+      .doc(user.uid)
+      .collection("Bookmarks")
+      .get();
+
+  for (var element in firestore.docs) {
+    if (element.id.toString().trim() == title.trim()) {
+      return true;
+    }
+  }
+  return false;
+}

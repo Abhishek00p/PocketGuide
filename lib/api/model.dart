@@ -22,7 +22,8 @@ class Database {
     return {"res": resp, "len": await resp.keys.toList().length};
   }
 
-  Future<http.Response> postRequestNotification(String recID) async {
+  Future<http.Response> postRequestNotification(
+      String recID, String sendid, String mesg) async {
     String url = 'https://fcm.googleapis.com/fcm/send';
     String token = dotenv.env["SERVERkEY"]!;
 
@@ -34,11 +35,22 @@ class Database {
     final fireresp =
         await FirebaseFirestore.instance.collection("allUser").doc(recID).get();
 
+    final senderdata = await FirebaseFirestore.instance
+        .collection("allUser")
+        .doc(sendid)
+        .get()
+        .then((value) => value.data());
+
     final userdata = fireresp.data();
     final usertoken = userdata!["pushtoken"];
-
-    String body =
-        '{ "te":$usertoken,"notification":{ "title":"hello","body":"bhag" } }  ';
+    print("usertoken : $usertoken");
+    final body = json.encode({
+      "to": usertoken,
+      "notification": {
+        "title": "new message from ${senderdata!["name"]} ",
+        "body": "$mesg"
+      }
+    });
 
     http.Response response =
         await http.post(Uri.parse(url), headers: headers, body: body);
