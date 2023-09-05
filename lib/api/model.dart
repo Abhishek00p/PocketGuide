@@ -10,7 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 class Database {
   loadData() async {
     var resp;
-    String urlStrig = "http://vivekjha.pythonanywhere.com/";
+    String urlStrig = "http://pocketguide.pythonanywhere.com/";
     try {
       final data = await http.get(Uri.parse(urlStrig));
 
